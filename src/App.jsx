@@ -125,16 +125,16 @@ function App() {
           hexTopColor={d => {
             const activeCount = d.points.filter(p => p.active).length;
             const ratio = activeCount / d.points.length;
-            if (ratio > 0.4) return '#ff1493'; // Deep pink for active
-            if (ratio > 0.1) return '#c71585'; // Medium violet red
-            return '#4b0082'; // Indigo for inactive population
+            if (ratio > 0.4) return '#ffffff'; // White for highly active
+            if (ratio > 0.1) return '#d4af37'; // Gold
+            return '#e8e4d9'; // Light beige for inactive population
           }}
           hexSideColor={d => {
             const activeCount = d.points.filter(p => p.active).length;
             const ratio = activeCount / d.points.length;
-            if (ratio > 0.4) return 'rgba(255, 20, 147, 0.8)';
-            if (ratio > 0.1) return 'rgba(199, 21, 133, 0.8)';
-            return 'rgba(75, 0, 130, 0.8)';
+            if (ratio > 0.4) return 'rgba(255, 255, 255, 0.9)';
+            if (ratio > 0.1) return 'rgba(212, 175, 55, 0.8)';
+            return 'rgba(232, 228, 217, 0.6)';
           }}
           hexAltitude={d => Math.max(0.01, d.sumWeight * 0.002)}
           hexBinMerge={true}

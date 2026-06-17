@@ -7,10 +7,18 @@
 .globe-container {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 400px; /* Offset to center globe between infobox and right edge */
+  width: calc(100% - 400px);
   height: 100%;
   z-index: 1;
+}
+
+/* On smaller screens, revert to full width and push it below or just full width */
+@media (max-width: 900px) {
+  .globe-container {
+    left: 0;
+    width: 100%;
+  }
 }
 
 .ui-layer {
@@ -77,7 +85,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgba(255, 20, 147, 0.8);
+  color: rgba(212, 175, 55, 0.9); /* Golden */
 }
 
 .time-display .value {
@@ -126,14 +134,14 @@
 .icon-btn.primary {
   width: 50px;
   height: 50px;
-  background: rgba(255, 20, 147, 0.1);
-  color: #ff1493;
-  border: 1px solid rgba(255, 20, 147, 0.3);
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .icon-btn.primary:hover {
-  background: rgba(255, 20, 147, 0.2);
-  box-shadow: 0 0 15px rgba(255, 20, 147, 0.2);
+  background: rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 .speed-control {
@@ -163,9 +171,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #ff1493;
+  background: #d4af37;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255, 20, 147, 0.4);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
 .legend {
@@ -190,12 +198,13 @@
 }
 
 .dot.active {
-  background: #ff1493;
-  box-shadow: 0 0 8px #ff1493;
+  background: #ffffff;
+  border: 1px solid #d4af37;
+  box-shadow: 0 0 8px #d4af37;
 }
 
 .dot.inactive {
-  background: #4b0082;
+  background: #e8e4d9;
 }
 
 /* Loading Overlay */
@@ -215,8 +224,8 @@
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 20, 147, 0.2);
-  border-top-color: #ff1493;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: #d4af37;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
