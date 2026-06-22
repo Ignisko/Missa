@@ -137,7 +137,9 @@ function App() {
           }}
           hexAltitude={d => {
             const activeCount = d.points.filter(p => p.active).length;
-            return Math.max(0.01, (d.points.length * 0.0018) + (activeCount * 0.012));
+            const baseHeight = Math.sqrt(d.points.length) * 0.015;
+            const activeHeight = Math.sqrt(activeCount) * 0.012;
+            return Math.max(0.01, baseHeight + activeHeight);
           }}
           hexBinMerge={true}
           enablePointerInteraction={true}
