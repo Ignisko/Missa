@@ -100,7 +100,10 @@ function App() {
                return 'rgba(232, 228, 217, 0.6)';
             }
           }}
-          hexAltitude={d => Math.max(0.01, d.sumWeight * 0.002)}
+          hexAltitude={d => {
+            const activeCount = d.points.filter(p => p.active).length;
+            return Math.max(0.01, (d.points.length * 0.0008) + (activeCount * 0.005));
+          }}
           hexBinMerge={true}
           enablePointerInteraction={true}
         />
@@ -110,7 +113,12 @@ function App() {
         <header className="header">
           <div className="title-section">
             <h1>Missa</h1>
-            <p>The Global Eucharistic Presence</p>
+            <p>
+              The Global Eucharistic Presence |{' '}
+              <a href="https://www.idiotajezusa.pl/" className="back-to-site">
+                idiotajezusa.pl
+              </a>
+            </p>
           </div>
           <button 
             className="theme-toggle" 
