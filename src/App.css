@@ -263,3 +263,37 @@
   text-decoration: underline;
 }
 
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.play-button {
+  background: transparent;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+.light-mode .play-button {
+  color: #333;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.light-mode .play-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.dark-mode .play-button {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.dark-mode .play-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+

@@ -11,8 +11,9 @@ function App() {
   const [activePoints, setActivePoints] = useState([]);
   
   // App state
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [simHour, setSimHour] = useState(8); // Start at 8 AM
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   // Derived time based on the slider (fixing the date to a Sunday for best visuals)
@@ -49,6 +50,15 @@ function App() {
     setActivePoints(points);
   }, [simHour, churches]); // Re-run only when simHour changes
 
+  // Auto-play interval effect
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setSimHour(prev => (prev + 1) % 24);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
   return (
     <div className={`app-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
       {!isReady && (
@@ -77,13 +87,13 @@ function App() {
             const ratio = activeCount / d.points.length;
             
             if (isDarkMode) {
-               if (ratio > 0.4) return '#ff1493'; // Deep pink for active
-               if (ratio > 0.1) return '#c71585'; 
-               return '#4b0082'; // Indigo
+              if (ratio > 0.4) return '#ff1493'; // Deep pink for active
+              if (ratio > 0.1) return '#c71585'; 
+              return '#4b0082'; // Indigo
             } else {
-               if (ratio > 0.4) return '#ffffff'; // White for highly active
-               if (ratio > 0.1) return '#d4af37'; // Gold
-               return '#e8e4d9'; // Light beige for inactive
+              if (ratio > 0.4) return '#ffffff'; // White for highly active
+              if (ratio > 0.1) return '#d4af37'; // Gold
+              return '#e8e4d9'; // Light beige for inactive
             }
           }}
           hexSideColor={d => {
@@ -91,18 +101,18 @@ function App() {
             const ratio = activeCount / d.points.length;
             
             if (isDarkMode) {
-               if (ratio > 0.4) return 'rgba(255, 20, 147, 0.8)';
-               if (ratio > 0.1) return 'rgba(199, 21, 133, 0.8)';
-               return 'rgba(75, 0, 130, 0.8)';
+              if (ratio > 0.4) return 'rgba(255, 20, 147, 0.8)';
+              if (ratio > 0.1) return 'rgba(199, 21, 133, 0.8)';
+              return 'rgba(75, 0, 130, 0.8)';
             } else {
-               if (ratio > 0.4) return 'rgba(255, 255, 255, 0.9)';
-               if (ratio > 0.1) return 'rgba(212, 175, 55, 0.8)';
-               return 'rgba(232, 228, 217, 0.6)';
+              if (ratio > 0.4) return 'rgba(255, 255, 255, 0.9)';
+              if (ratio > 0.1) return 'rgba(212, 175, 55, 0.8)';
+              return 'rgba(232, 228, 217, 0.6)';
             }
           }}
           hexAltitude={d => {
             const activeCount = d.points.filter(p => p.active).length;
-            return Math.max(0.01, (d.points.length * 0.0008) + (activeCount * 0.005));
+            return Math.max(0.01, (d.points.length * 0.0018) + (activeCount * 0.012));
           }}
           hexBinMerge={true}
           enablePointerInteraction={true}
@@ -144,7 +154,15 @@ function App() {
           </div>
 
           <div className="speed-control">
-            <label>Time of Day (UTC)</label>
+            <div className="slider-header">
+              <label>Time of Day (UTC)</label>
+              <button 
+                className="play-button" 
+                onClick={() => setIsPlaying(!isPlaying)}
+              >
+                {isPlaying ? 'Pause' : 'Play'}
+              </button>
+            </div>
             <input 
               type="range" 
               className="speed-slider"
