@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Globe from 'react-globe.gl';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Play, Pause } from 'lucide-react';
 import './App.css';
 import { generateSampleChurches, isMassActive, getLiturgicalSeason } from './utils/simulation';
 import cathedralsData from './data/cathedrals.json';
@@ -287,7 +287,7 @@ function App() {
               className={`tab-button ${activeTab === 'simulation' ? 'active' : ''}`}
               onClick={() => setActiveTab('simulation')}
             >
-              Simulation
+              Stats
             </button>
             <button 
               className={`tab-button ${activeTab === 'catalogue' ? 'active' : ''}`}
@@ -300,37 +300,13 @@ function App() {
           {activeTab === 'simulation' ? (
             <>
               <div className="time-display">
-                <span className="label">Simulated Time</span>
-                <span className="value">
-                  {simTime.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}
+                <span className="label">Current Season</span>
+                <span className="value liturgical-season-text" style={{ color: getSeasonColors(currentSeason, isDarkMode).active }}>
+                  {currentSeason}
                 </span>
                 <span className="date-value">
                   {simTime.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' })}
                 </span>
-                <span className="liturgical-season">
-                  {getLiturgicalSeason(simTime)}
-                </span>
-              </div>
-
-              <div className="speed-control">
-                <div className="slider-header">
-                  <label>Time of Day (UTC)</label>
-                  <button 
-                    className="play-button" 
-                    onClick={() => setIsPlaying(!isPlaying)}
-                  >
-                    {isPlaying ? 'Pause' : 'Play'}
-                  </button>
-                </div>
-                <input 
-                  type="range" 
-                  className="speed-slider"
-                  min="0" 
-                  max="23" 
-                  step="1"
-                  value={simHour}
-                  onChange={(e) => setSimHour(Number(e.target.value))}
-                />
               </div>
 
               <div className="legend">
@@ -383,6 +359,33 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="timeline-player">
+          <button 
+            className="play-pause-btn" 
+            onClick={() => setIsPlaying(!isPlaying)}
+            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            style={{ backgroundColor: getSeasonColors(currentSeason, isDarkMode).active }}
+          >
+            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+          </button>
+          
+          <div className="timeline-slider-container">
+            <input 
+              type="range" 
+              className="speed-slider"
+              min="0" 
+              max="23" 
+              step="1"
+              value={simHour}
+              onChange={(e) => setSimHour(Number(e.target.value))}
+            />
+          </div>
+
+          <div className="timeline-time-label">
+            {simTime.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}
+          </div>
         </div>
       </div>
     </div>
