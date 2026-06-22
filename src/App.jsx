@@ -38,8 +38,6 @@ function App() {
   const [simHour, setSimHour] = useState(8); // Start at 8 AM
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [activeTab, setActiveTab] = useState('simulation'); // 'simulation' or 'catalogue'
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Derived time based on the slider (fixing the date to a Sunday for best visuals)
   const simTime = new Date(`2024-05-19T${String(simHour).padStart(2, '0')}:00:00Z`);
@@ -58,14 +56,21 @@ function App() {
 
     setChurches([...formattedCathedrals, ...sampled]);
     
-    // Add some initial spin to the globe
+    // Initialize globe rotation
     if (globeRef.current) {
-      globeRef.current.controls().autoRotate = true;
+      globeRef.current.controls().autoRotate = isPlaying;
       globeRef.current.controls().autoRotateSpeed = 0.5;
     }
     
     setIsReady(true);
   }, []);
+
+  // Sync auto-rotate with playing state
+  useEffect(() => {
+    if (globeRef.current) {
+      globeRef.current.controls().autoRotate = isPlaying;
+    }
+  }, [isPlaying]);
 
   // Update masses when the hour slider changes
   useEffect(() => {
@@ -116,29 +121,15 @@ function App() {
     const dirLight = scene.children.find(c => c.isDirectionalLight);
     if (dirLight) {
       dirLight.position.set(x, y, z);
-      dirLight.intensity = isDarkMode ? 0.85 : 0.6; // Prevent overexposure in light mode
+      dirLight.intensity = isDarkMode ? 0.85 : 0.9; // Keep light mode bright
     }
 
     // Set ambient light so the night side is dark but visible
     const ambientLight = scene.children.find(c => c.isAmbientLight);
     if (ambientLight) {
-      ambientLight.intensity = isDarkMode ? 0.25 : 0.15; // Drop ambient light in light mode to add shading
+      ambientLight.intensity = isDarkMode ? 0.25 : 0.6; // Significantly boost ambient light in light mode to prevent black shadows
     }
   }, [simHour, isDarkMode, isReady]);
-
-  const handleCathedralClick = (cathedral) => {
-    if (globeRef.current) {
-      // Temporarily disable auto-rotation when focusing on a cathedral
-      globeRef.current.controls().autoRotate = false;
-      globeRef.current.pointOfView({ lat: cathedral.lat, lng: cathedral.lng, altitude: 1.2 }, 2000);
-    }
-  };
-
-  const filteredCathedrals = cathedralsData.filter(c =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.country.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const currentSeason = getLiturgicalSeason(simTime);
 
@@ -179,9 +170,10 @@ function App() {
             const ratio = activeCount / d.points.length;
             const colors = getSeasonColors(currentSeason, isDarkMode);
             
-            if (ratio > 0.4) return colors.active + 'cc';
-            if (ratio > 0.1) return colors.active + '88';
-            return colors.inactive + 'aa';
+            // Match the top color but slightly darker or more opaque for depth without being white/black
+            if (ratio > 0.4) return colors.active;
+            if (ratio > 0.1) return colors.active + 'cc';
+            return colors.inactive;
           }}
           hexAltitude={d => {
             const activeCount = d.points.filter(p => p.active).length;
@@ -282,83 +274,39 @@ function App() {
         </header>
 
         <div className="controls-panel">
-          <div className="tab-bar">
-            <button 
-              className={`tab-button ${activeTab === 'simulation' ? 'active' : ''}`}
-              onClick={() => setActiveTab('simulation')}
-            >
-              Stats
-            </button>
-            <button 
-              className={`tab-button ${activeTab === 'catalogue' ? 'active' : ''}`}
-              onClick={() => setActiveTab('catalogue')}
-            >
-              Cathedrals
-            </button>
+          <div className="time-display">
+            <span className="label">Current Season</span>
+            <span className="value liturgical-season-text" style={{ color: getSeasonColors(currentSeason, isDarkMode).active }}>
+              {currentSeason}
+            </span>
+            <span className="date-value">
+              {simTime.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' })}
+            </span>
           </div>
 
-          {activeTab === 'simulation' ? (
-            <>
-              <div className="time-display">
-                <span className="label">Current Season</span>
-                <span className="value liturgical-season-text" style={{ color: getSeasonColors(currentSeason, isDarkMode).active }}>
-                  {currentSeason}
-                </span>
-                <span className="date-value">
-                  {simTime.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' })}
-                </span>
-              </div>
-
-              <div className="legend">
-                <div className="legend-item">
-                  <div 
-                    className="dot" 
-                    style={{ 
-                      backgroundColor: getSeasonColors(currentSeason, isDarkMode).active,
-                      boxShadow: `0 0 8px ${getSeasonColors(currentSeason, isDarkMode).active}`,
-                      border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
-                    }}
-                  ></div>
-                  <span>Active Mass (Holy Eucharist)</span>
-                </div>
-                <div className="legend-item">
-                  <div 
-                    className="dot" 
-                    style={{ 
-                      backgroundColor: getSeasonColors(currentSeason, isDarkMode).inactive,
-                      border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
-                    }}
-                  ></div>
-                  <span>Church Location</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="catalogue-section">
-              <input 
-                type="text" 
-                placeholder="Search cathedrals..." 
-                className="search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <div className="cathedral-list">
-                {filteredCathedrals.map(cathedral => (
-                  <div 
-                    key={cathedral.id} 
-                    className="cathedral-item"
-                    onClick={() => handleCathedralClick(cathedral)}
-                  >
-                    <div className="cathedral-name">{cathedral.name}</div>
-                    <div className="cathedral-meta">{cathedral.city}, {cathedral.country}</div>
-                  </div>
-                ))}
-                {filteredCathedrals.length === 0 && (
-                  <div className="no-results">No cathedrals found</div>
-                )}
-              </div>
+          <div className="legend">
+            <div className="legend-item">
+              <div 
+                className="dot" 
+                style={{ 
+                  backgroundColor: getSeasonColors(currentSeason, isDarkMode).active,
+                  boxShadow: `0 0 8px ${getSeasonColors(currentSeason, isDarkMode).active}`,
+                  border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
+                }}
+              ></div>
+              <span>Active Mass (Holy Eucharist)</span>
             </div>
-          )}
+            <div className="legend-item">
+              <div 
+                className="dot" 
+                style={{ 
+                  backgroundColor: getSeasonColors(currentSeason, isDarkMode).inactive,
+                  border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
+                }}
+              ></div>
+              <span>Church Location</span>
+            </div>
+          </div>
         </div>
 
         <div className="timeline-player">
