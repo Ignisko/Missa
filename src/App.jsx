@@ -3,6 +3,7 @@ import Globe from 'react-globe.gl';
 import { Moon, Sun } from 'lucide-react';
 import './App.css';
 import { generateSampleChurches, isMassActive, getLiturgicalSeason } from './utils/simulation';
+import cathedralsData from './data/cathedrals.json';
 
 function App() {
   const globeRef = useRef();
@@ -15,15 +16,25 @@ function App() {
   const [simHour, setSimHour] = useState(8); // Start at 8 AM
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [activeTab, setActiveTab] = useState('simulation'); // 'simulation' or 'catalogue'
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Derived time based on the slider (fixing the date to a Sunday for best visuals)
   const simTime = new Date(`2024-05-19T${String(simHour).padStart(2, '0')}:00:00Z`);
 
   // Initialize data and globe
   useEffect(() => {
-    // Generate data once (reduced count from 25k to 15k to prevent crashes)
-    const data = generateSampleChurches(15000); 
-    setChurches(data);
+    // Generate simulated churches and prepend the real cathedrals
+    const sampled = generateSampleChurches(15000); 
+    
+    const formattedCathedrals = cathedralsData.map((c, idx) => ({
+      ...c,
+      id: `cathedral-${c.id}`,
+      size: 'large', // Cathedrals are always large
+      tzOffset: c.lng / 15 // Approximate timezone offset for simplicity
+    }));
+
+    setChurches([...formattedCathedrals, ...sampled]);
     
     // Add some initial spin to the globe
     if (globeRef.current) {
@@ -58,6 +69,20 @@ function App() {
     }, 1500);
     return () => clearInterval(interval);
   }, [isPlaying]);
+
+  const handleCathedralClick = (cathedral) => {
+    if (globeRef.current) {
+      // Temporarily disable auto-rotation when focusing on a cathedral
+      globeRef.current.controls().autoRotate = false;
+      globeRef.current.pointOfView({ lat: cathedral.lat, lng: cathedral.lng, altitude: 1.2 }, 2000);
+    }
+  };
+
+  const filteredCathedrals = cathedralsData.filter(c =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.country.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className={`app-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
@@ -116,6 +141,15 @@ function App() {
           }}
           hexBinMerge={true}
           enablePointerInteraction={true}
+          
+          labelsData={cathedralsData}
+          labelLat={d => d.lat}
+          labelLng={d => d.lng}
+          labelText={d => d.name}
+          labelColor={() => isDarkMode ? '#ffeb3b' : '#d4af37'}
+          labelSize={0.4}
+          labelDotRadius={0.3}
+          labelResolution={2}
         />
       </div>
 
@@ -140,50 +174,94 @@ function App() {
         </header>
 
         <div className="controls-panel">
-          <div className="time-display">
-            <span className="label">Simulated Time</span>
-            <span className="value">
-              {simTime.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}
-            </span>
-            <span className="date-value">
-              {simTime.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
-            <span className="liturgical-season">
-              {getLiturgicalSeason(simTime)}
-            </span>
+          <div className="tab-bar">
+            <button 
+              className={`tab-button ${activeTab === 'simulation' ? 'active' : ''}`}
+              onClick={() => setActiveTab('simulation')}
+            >
+              Simulation
+            </button>
+            <button 
+              className={`tab-button ${activeTab === 'catalogue' ? 'active' : ''}`}
+              onClick={() => setActiveTab('catalogue')}
+            >
+              Cathedrals
+            </button>
           </div>
 
-          <div className="speed-control">
-            <div className="slider-header">
-              <label>Time of Day (UTC)</label>
-              <button 
-                className="play-button" 
-                onClick={() => setIsPlaying(!isPlaying)}
-              >
-                {isPlaying ? 'Pause' : 'Play'}
-              </button>
-            </div>
-            <input 
-              type="range" 
-              className="speed-slider"
-              min="0" 
-              max="23" 
-              step="1"
-              value={simHour}
-              onChange={(e) => setSimHour(Number(e.target.value))}
-            />
-          </div>
+          {activeTab === 'simulation' ? (
+            <>
+              <div className="time-display">
+                <span className="label">Simulated Time</span>
+                <span className="value">
+                  {simTime.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })}
+                </span>
+                <span className="date-value">
+                  {simTime.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' })}
+                </span>
+                <span className="liturgical-season">
+                  {getLiturgicalSeason(simTime)}
+                </span>
+              </div>
 
-          <div className="legend">
-            <div className="legend-item">
-              <div className="dot active"></div>
-              <span>Active Mass (Holy Eucharist)</span>
+              <div className="speed-control">
+                <div className="slider-header">
+                  <label>Time of Day (UTC)</label>
+                  <button 
+                    className="play-button" 
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? 'Pause' : 'Play'}
+                  </button>
+                </div>
+                <input 
+                  type="range" 
+                  className="speed-slider"
+                  min="0" 
+                  max="23" 
+                  step="1"
+                  value={simHour}
+                  onChange={(e) => setSimHour(Number(e.target.value))}
+                />
+              </div>
+
+              <div className="legend">
+                <div className="legend-item">
+                  <div className="dot active"></div>
+                  <span>Active Mass (Holy Eucharist)</span>
+                </div>
+                <div className="legend-item">
+                  <div className="dot inactive"></div>
+                  <span>Church Location</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="catalogue-section">
+              <input 
+                type="text" 
+                placeholder="Search cathedrals..." 
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <div className="cathedral-list">
+                {filteredCathedrals.map(cathedral => (
+                  <div 
+                    key={cathedral.id} 
+                    className="cathedral-item"
+                    onClick={() => handleCathedralClick(cathedral)}
+                  >
+                    <div className="cathedral-name">{cathedral.name}</div>
+                    <div className="cathedral-meta">{cathedral.city}, {cathedral.country}</div>
+                  </div>
+                ))}
+                {filteredCathedrals.length === 0 && (
+                  <div className="no-results">No cathedrals found</div>
+                )}
+              </div>
             </div>
-            <div className="legend-item">
-              <div className="dot inactive"></div>
-              <span>Church Location</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

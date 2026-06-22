@@ -1,0 +1,282 @@
+[
+  {
+    "id": 1,
+    "name": "St. Peter's Basilica",
+    "city": "Vatican City",
+    "country": "Vatican City",
+    "region": "West Europe",
+    "lat": 41.9022,
+    "lng": 12.4539,
+    "timezone": "Europe/Rome"
+  },
+  {
+    "id": 2,
+    "name": "Notre-Dame de Paris",
+    "city": "Paris",
+    "country": "France",
+    "region": "West Europe",
+    "lat": 48.8530,
+    "lng": 2.3499,
+    "timezone": "Europe/Paris"
+  },
+  {
+    "id": 3,
+    "name": "Cologne Cathedral",
+    "city": "Cologne",
+    "country": "Germany",
+    "region": "West Europe",
+    "lat": 50.9413,
+    "lng": 6.9583,
+    "timezone": "Europe/Berlin"
+  },
+  {
+    "id": 4,
+    "name": "Wawel Cathedral",
+    "city": "Kraków",
+    "country": "Poland",
+    "region": "East Europe",
+    "lat": 50.0547,
+    "lng": 19.9354,
+    "timezone": "Europe/Warsaw"
+  },
+  {
+    "id": 5,
+    "name": "St. Stephen's Cathedral",
+    "city": "Vienna",
+    "country": "Austria",
+    "region": "West Europe",
+    "lat": 48.2084,
+    "lng": 16.3731,
+    "timezone": "Europe/Vienna"
+  },
+  {
+    "id": 6,
+    "name": "Cathedral of Santiago de Compostela",
+    "city": "Santiago de Compostela",
+    "country": "Spain",
+    "region": "West Europe",
+    "lat": 42.8806,
+    "lng": -8.5446,
+    "timezone": "Europe/Madrid"
+  },
+  {
+    "id": 7,
+    "name": "Westminster Cathedral",
+    "city": "London",
+    "country": "England",
+    "region": "West Europe",
+    "lat": 51.4961,
+    "lng": -0.1397,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": 8,
+    "name": "Milan Cathedral",
+    "city": "Milan",
+    "country": "Italy",
+    "region": "West Europe",
+    "lat": 45.4641,
+    "lng": 9.1919,
+    "timezone": "Europe/Rome"
+  },
+  {
+    "id": 9,
+    "name": "St. Patrick's Cathedral",
+    "city": "New York",
+    "country": "USA",
+    "region": "North America",
+    "lat": 40.7586,
+    "lng": -73.9762,
+    "timezone": "America/New_York"
+  },
+  {
+    "id": 10,
+    "name": "Basilica of the National Shrine of the Immaculate Conception",
+    "city": "Washington D.C.",
+    "country": "USA",
+    "region": "North America",
+    "lat": 38.9300,
+    "lng": -77.0006,
+    "timezone": "America/New_York"
+  },
+  {
+    "id": 11,
+    "name": "Notre-Dame Basilica",
+    "city": "Montreal",
+    "country": "Canada",
+    "region": "North America",
+    "lat": 45.5048,
+    "lng": -73.5560,
+    "timezone": "America/Montreal"
+  },
+  {
+    "id": 12,
+    "name": "Metropolitan Cathedral of Mexico City",
+    "city": "Mexico City",
+    "country": "Mexico",
+    "region": "North America",
+    "lat": 19.4344,
+    "lng": -99.1331,
+    "timezone": "America/Mexico_City"
+  },
+  {
+    "id": 13,
+    "name": "Metropolitan Cathedral of São Paulo",
+    "city": "São Paulo",
+    "country": "Brazil",
+    "region": "South America",
+    "lat": -23.5513,
+    "lng": -46.6343,
+    "timezone": "America/Sao_Paulo"
+  },
+  {
+    "id": 14,
+    "name": "Metropolitan Cathedral of Buenos Aires",
+    "city": "Buenos Aires",
+    "country": "Argentina",
+    "region": "South America",
+    "lat": -34.6076,
+    "lng": -58.3733,
+    "timezone": "America/Argentina/Buenos_Aires"
+  },
+  {
+    "id": 15,
+    "name": "Metropolitan Cathedral of Bogotá",
+    "city": "Bogotá",
+    "country": "Colombia",
+    "region": "South America",
+    "lat": 4.5978,
+    "lng": -74.0756,
+    "timezone": "America/Bogota"
+  },
+  {
+    "id": 16,
+    "name": "Cathedral of Lima",
+    "city": "Lima",
+    "country": "Peru",
+    "region": "South America",
+    "lat": -12.0469,
+    "lng": -77.0297,
+    "timezone": "America/Lima"
+  },
+  {
+    "id": 17,
+    "name": "Manila Cathedral",
+    "city": "Manila",
+    "country": "Philippines",
+    "region": "South and East Asia",
+    "lat": 14.5916,
+    "lng": 120.9733,
+    "timezone": "Asia/Manila"
+  },
+  {
+    "id": 18,
+    "name": "Cathedral of the Good Shepherd",
+    "city": "Singapore",
+    "country": "Singapore",
+    "region": "South and East Asia",
+    "lat": 1.2968,
+    "lng": 103.8507,
+    "timezone": "Asia/Singapore"
+  },
+  {
+    "id": 19,
+    "name": "St. Mary's Cathedral",
+    "city": "Tokyo",
+    "country": "Japan",
+    "region": "South and East Asia",
+    "lat": 35.7144,
+    "lng": 139.7275,
+    "timezone": "Asia/Tokyo"
+  },
+  {
+    "id": 20,
+    "name": "Sacred Heart Cathedral",
+    "city": "New Delhi",
+    "country": "India",
+    "region": "South and East Asia",
+    "lat": 28.6291,
+    "lng": 77.2078,
+    "timezone": "Asia/Kolkata"
+  },
+  {
+    "id": 21,
+    "name": "Myeongdong Cathedral",
+    "city": "Seoul",
+    "country": "South Korea",
+    "region": "South and East Asia",
+    "lat": 37.5632,
+    "lng": 126.9873,
+    "timezone": "Asia/Seoul"
+  },
+  {
+    "id": 22,
+    "name": "Cathedral of Saints Peter and Paul",
+    "city": "Douala",
+    "country": "Cameroon",
+    "region": "Eastern and Central Africa",
+    "lat": 4.0436,
+    "lng": 9.6894,
+    "timezone": "Africa/Douala"
+  },
+  {
+    "id": 23,
+    "name": "St. Mary's Cathedral",
+    "city": "Cape Town",
+    "country": "South Africa",
+    "region": "Southern Africa",
+    "lat": -33.9283,
+    "lng": 18.4217,
+    "timezone": "Africa/Johannesburg"
+  },
+  {
+    "id": 24,
+    "name": "Sacred Heart Cathedral",
+    "city": "Nairobi",
+    "country": "Kenya",
+    "region": "Eastern and Central Africa",
+    "lat": -1.2858,
+    "lng": 36.8222,
+    "timezone": "Africa/Nairobi"
+  },
+  {
+    "id": 25,
+    "name": "St. Mary's Cathedral",
+    "city": "Sydney",
+    "country": "Australia",
+    "region": "Oceania",
+    "lat": -33.8712,
+    "lng": 151.2133,
+    "timezone": "Australia/Sydney"
+  },
+  {
+    "id": 26,
+    "name": "St. Patrick's Cathedral",
+    "city": "Auckland",
+    "country": "New Zealand",
+    "region": "Oceania",
+    "lat": -36.8464,
+    "lng": 174.7622,
+    "timezone": "Pacific/Auckland"
+  },
+  {
+    "id": 27,
+    "name": "St. John's Co-Cathedral",
+    "city": "Valletta",
+    "country": "Malta",
+    "region": "West Europe",
+    "lat": 35.8977,
+    "lng": 14.5125,
+    "timezone": "Europe/Malta"
+  },
+  {
+    "id": 28,
+    "name": "St. George's Cathedral",
+    "city": "Jerusalem",
+    "country": "Israel",
+    "region": "Central and Southwest Asia",
+    "lat": 31.7878,
+    "lng": 35.2289,
+    "timezone": "Asia/Jerusalem"
+  }
+]
