@@ -6,23 +6,25 @@ import { generateSampleChurches, isMassActive, getLiturgicalSeason } from './uti
 import cathedralsData from './data/cathedrals.json';
 
 const getSeasonColors = (season, isDarkMode) => {
-  if (season === 'Lent' || season === 'Advent') {
-    return {
-      active: isDarkMode ? '#da70d6' : '#800080', // Orchid / Purple
-      inactive: isDarkMode ? '#4b0082' : '#e6e0ec'  // Indigo / Light purple
-    };
+  if (isDarkMode) {
+    const inactive = 'rgba(255, 255, 255, 0.08)'; // Subtle white-transparency on dark globe
+    if (season === 'Lent' || season === 'Advent') {
+      return { active: '#da70d6', inactive }; // Violet
+    }
+    if (season === 'Easter Season' || season === 'Christmas Season') {
+      return { active: '#ffec3b', inactive }; // Gold
+    }
+    return { active: '#00e676', inactive }; // Green (Ordinary)
+  } else {
+    const inactive = 'rgba(0, 0, 0, 0.08)'; // Subtle dark-transparency on light globe
+    if (season === 'Lent' || season === 'Advent') {
+      return { active: '#800080', inactive }; // Deep purple
+    }
+    if (season === 'Easter Season' || season === 'Christmas Season') {
+      return { active: '#b8860b', inactive }; // Dark goldenrod for high contrast
+    }
+    return { active: '#1b5e20', inactive }; // Deep green
   }
-  if (season === 'Easter Season' || season === 'Christmas Season') {
-    return {
-      active: isDarkMode ? '#ffec3b' : '#d4af37', // Yellow / Gold
-      inactive: isDarkMode ? '#3e2723' : '#efebe9' // Dark brown / Cream
-    };
-  }
-  // Ordinary Time
-  return {
-    active: isDarkMode ? '#00e676' : '#2e7d32', // Neon green / Forest green
-    inactive: isDarkMode ? '#1b5e20' : '#e8f5e9' // Dark green / Light green
-  };
 };
 
 function App() {
@@ -114,12 +116,13 @@ function App() {
     const dirLight = scene.children.find(c => c.isDirectionalLight);
     if (dirLight) {
       dirLight.position.set(x, y, z);
+      dirLight.intensity = isDarkMode ? 0.85 : 0.6; // Prevent overexposure in light mode
     }
 
     // Set ambient light so the night side is dark but visible
     const ambientLight = scene.children.find(c => c.isAmbientLight);
     if (ambientLight) {
-      ambientLight.intensity = isDarkMode ? 0.25 : 0.45;
+      ambientLight.intensity = isDarkMode ? 0.25 : 0.15; // Drop ambient light in light mode to add shading
     }
   }, [simHour, isDarkMode, isReady]);
 
@@ -332,11 +335,24 @@ function App() {
 
               <div className="legend">
                 <div className="legend-item">
-                  <div className="dot active"></div>
+                  <div 
+                    className="dot" 
+                    style={{ 
+                      backgroundColor: getSeasonColors(currentSeason, isDarkMode).active,
+                      boxShadow: `0 0 8px ${getSeasonColors(currentSeason, isDarkMode).active}`,
+                      border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
+                    }}
+                  ></div>
                   <span>Active Mass (Holy Eucharist)</span>
                 </div>
                 <div className="legend-item">
-                  <div className="dot inactive"></div>
+                  <div 
+                    className="dot" 
+                    style={{ 
+                      backgroundColor: getSeasonColors(currentSeason, isDarkMode).inactive,
+                      border: isDarkMode ? 'none' : '1px solid rgba(0,0,0,0.1)'
+                    }}
+                  ></div>
                   <span>Church Location</span>
                 </div>
               </div>
