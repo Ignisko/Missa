@@ -389,5 +389,74 @@
   margin-top: 1rem;
 }
 
+/* Globe Tooltip Styling */
+.globe-tooltip {
+  background: rgba(10, 10, 20, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  min-width: 160px;
+  text-align: left;
+}
+
+.tooltip-header {
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffeb3b;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 4px;
+}
+
+.tooltip-row span {
+  opacity: 0.7;
+}
+
+.tooltip-cathedrals {
+  margin-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  padding-top: 6px;
+}
+
+.tooltip-cathedrals ul {
+  margin: 4px 0 0 0;
+  padding-left: 14px;
+  font-size: 0.75rem;
+  color: #a5d6a7;
+  text-align: left;
+}
+
+.status-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+.status-badge.active {
+  background: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+.status-badge.inactive {
+  background: rgba(244, 67, 54, 0.2);
+  color: #e57373;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+
 
 

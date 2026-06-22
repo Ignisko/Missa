@@ -5,6 +5,26 @@ import './App.css';
 import { generateSampleChurches, isMassActive, getLiturgicalSeason } from './utils/simulation';
 import cathedralsData from './data/cathedrals.json';
 
+const getSeasonColors = (season, isDarkMode) => {
+  if (season === 'Lent' || season === 'Advent') {
+    return {
+      active: isDarkMode ? '#da70d6' : '#800080', // Orchid / Purple
+      inactive: isDarkMode ? '#4b0082' : '#e6e0ec'  // Indigo / Light purple
+    };
+  }
+  if (season === 'Easter Season' || season === 'Christmas Season') {
+    return {
+      active: isDarkMode ? '#ffec3b' : '#d4af37', // Yellow / Gold
+      inactive: isDarkMode ? '#3e2723' : '#efebe9' // Dark brown / Cream
+    };
+  }
+  // Ordinary Time
+  return {
+    active: isDarkMode ? '#00e676' : '#2e7d32', // Neon green / Forest green
+    inactive: isDarkMode ? '#1b5e20' : '#e8f5e9' // Dark green / Light green
+  };
+};
+
 function App() {
   const globeRef = useRef();
   
@@ -55,7 +75,9 @@ function App() {
       return {
         lat: c.lat,
         lng: c.lng,
-        active
+        active,
+        id: c.id,
+        name: c.name
       };
     });
     setActivePoints(points);
@@ -70,6 +92,37 @@ function App() {
     return () => clearInterval(interval);
   }, [isPlaying]);
 
+  // Adjust sun position and ambient lighting
+  useEffect(() => {
+    if (!globeRef.current) return;
+    const scene = globeRef.current.scene();
+    
+    // May 19 declination is approx 19.5 degrees N
+    const sunLat = 19.5; 
+    const sunLng = (12 - simHour) * 15;
+    
+    // Position of the sun in spherical coordinates
+    const r = 350; 
+    const phi = (90 - sunLat) * Math.PI / 180;
+    const theta = (sunLng + 180) * Math.PI / 180;
+    
+    const x = r * Math.sin(phi) * Math.sin(theta);
+    const y = r * Math.cos(phi);
+    const z = r * Math.sin(phi) * Math.cos(theta);
+    
+    // Find Three.js directional light and position it representing the Sun
+    const dirLight = scene.children.find(c => c.isDirectionalLight);
+    if (dirLight) {
+      dirLight.position.set(x, y, z);
+    }
+
+    // Set ambient light so the night side is dark but visible
+    const ambientLight = scene.children.find(c => c.isAmbientLight);
+    if (ambientLight) {
+      ambientLight.intensity = isDarkMode ? 0.25 : 0.45;
+    }
+  }, [simHour, isDarkMode, isReady]);
+
   const handleCathedralClick = (cathedral) => {
     if (globeRef.current) {
       // Temporarily disable auto-rotation when focusing on a cathedral
@@ -83,6 +136,8 @@ function App() {
     c.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.country.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const currentSeason = getLiturgicalSeason(simTime);
 
   return (
     <div className={`app-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
@@ -110,30 +165,20 @@ function App() {
           hexTopColor={d => {
             const activeCount = d.points.filter(p => p.active).length;
             const ratio = activeCount / d.points.length;
+            const colors = getSeasonColors(currentSeason, isDarkMode);
             
-            if (isDarkMode) {
-              if (ratio > 0.4) return '#ff1493'; // Deep pink for active
-              if (ratio > 0.1) return '#c71585'; 
-              return '#4b0082'; // Indigo
-            } else {
-              if (ratio > 0.4) return '#ffffff'; // White for highly active
-              if (ratio > 0.1) return '#d4af37'; // Gold
-              return '#e8e4d9'; // Light beige for inactive
-            }
+            if (ratio > 0.4) return colors.active;
+            if (ratio > 0.1) return colors.active + 'cc';
+            return colors.inactive;
           }}
           hexSideColor={d => {
             const activeCount = d.points.filter(p => p.active).length;
             const ratio = activeCount / d.points.length;
+            const colors = getSeasonColors(currentSeason, isDarkMode);
             
-            if (isDarkMode) {
-              if (ratio > 0.4) return 'rgba(255, 20, 147, 0.8)';
-              if (ratio > 0.1) return 'rgba(199, 21, 133, 0.8)';
-              return 'rgba(75, 0, 130, 0.8)';
-            } else {
-              if (ratio > 0.4) return 'rgba(255, 255, 255, 0.9)';
-              if (ratio > 0.1) return 'rgba(212, 175, 55, 0.8)';
-              return 'rgba(232, 228, 217, 0.6)';
-            }
+            if (ratio > 0.4) return colors.active + 'cc';
+            if (ratio > 0.1) return colors.active + '88';
+            return colors.inactive + 'aa';
           }}
           hexAltitude={d => {
             const activeCount = d.points.filter(p => p.active).length;
@@ -144,6 +189,39 @@ function App() {
           hexBinMerge={true}
           enablePointerInteraction={true}
           
+          hexLabel={d => {
+            const total = d.points.length;
+            const activeCount = d.points.filter(p => p.active).length;
+            const cathedralsInBin = d.points.filter(p => p.id && String(p.id).startsWith('cathedral-'));
+            
+            const avgLng = d.points.reduce((sum, p) => sum + p.lng, 0) / total;
+            const tzOffset = avgLng / 15;
+            const localTime = new Date(simTime.getTime() + tzOffset * 3600 * 1000);
+            const timeStr = localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+            
+            return `
+              <div class="globe-tooltip">
+                <div class="tooltip-header">Location Cluster</div>
+                <div class="tooltip-row">
+                  <span>Local Time:</span>
+                  <strong>${timeStr}</strong>
+                </div>
+                <div class="tooltip-row">
+                  <span>Active Masses:</span>
+                  <strong>${activeCount} / ${total}</strong>
+                </div>
+                ${cathedralsInBin.length > 0 ? `
+                  <div class="tooltip-cathedrals">
+                    <strong>Cathedrals here:</strong>
+                    <ul>
+                      ${cathedralsInBin.map(c => `<li>${c.name}</li>`).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }}
+          
           labelsData={cathedralsData}
           labelLat={d => d.lat}
           labelLng={d => d.lng}
@@ -152,6 +230,31 @@ function App() {
           labelSize={0.4}
           labelDotRadius={0.3}
           labelResolution={2}
+          labelLabel={d => {
+            const active = isMassActive(d, simTime);
+            const localTime = new Date(simTime.getTime() + d.lng / 15 * 3600 * 1000);
+            const timeStr = localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+            
+            return `
+              <div class="globe-tooltip cathedral-tooltip">
+                <div class="tooltip-header">${d.name}</div>
+                <div class="tooltip-row">
+                  <span>Location:</span>
+                  <strong>${d.city}, ${d.country}</strong>
+                </div>
+                <div class="tooltip-row">
+                  <span>Local Time:</span>
+                  <strong>${timeStr}</strong>
+                </div>
+                <div class="tooltip-row">
+                  <span>Status:</span>
+                  <span class="status-badge ${active ? 'active' : 'inactive'}">
+                    ${active ? 'Mass in Progress' : 'No Active Mass'}
+                  </span>
+                </div>
+              </div>
+            `;
+          }}
         />
       </div>
 
