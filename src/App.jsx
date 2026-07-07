@@ -35,12 +35,13 @@ function App() {
   
   // App state
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [simHour, setSimHour] = useState(8); // Start at 8 AM
+  const [simHour, setSimHour] = useState(new Date().getUTCHours()); // Start at current UTC hour
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  // Derived time based on the slider (fixing the date to a Sunday for best visuals)
-  const simTime = new Date(`2024-05-19T${String(simHour).padStart(2, '0')}:00:00Z`);
+  // Derived time based on the slider, using the current date
+  const now = new Date();
+  const simTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), simHour, 0, 0));
 
   // Initialize data and globe
   useEffect(() => {
@@ -104,8 +105,11 @@ function App() {
     if (!globeRef.current) return;
     const scene = globeRef.current.scene();
     
-    // May 19 declination is approx 19.5 degrees N
-    const sunLat = 19.5; 
+    // Calculate approximate sun declination for the current date
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    const sunLat = 23.44 * Math.sin((360 / 365 * (dayOfYear - 81)) * (Math.PI / 180)); 
     const sunLng = (12 - simHour) * 15;
     
     // Position of the sun in spherical coordinates
@@ -259,8 +263,8 @@ function App() {
             <h1>Missa</h1>
             <p>
               The Global Eucharistic Presence |{' '}
-              <a href="https://www.idiotajezusa.pl/" className="back-to-site">
-                idiotajezusa.pl
+              <a href="https://www.afoolforjesus.org/" className="back-to-site">
+                afoolforjesus.org
               </a>
             </p>
           </div>
